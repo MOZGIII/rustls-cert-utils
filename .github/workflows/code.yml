@@ -1,0 +1,109 @@
+name: code
+
+on:
+  push:
+    branches:
+      - "**"
+      - "!gh-readonly-queue/**"
+  merge_group:
+  schedule:
+    - cron: "0 20 * * 0"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' && github.event_name != 'merge_group' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CARGO_INCREMENTAL: "0"
+  RUSTDOCFLAGS: "-D warnings"
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        mode:
+          - name: clippy
+            cargoCommand: clippy
+            cargoArgs: "--workspace --all-targets -- -D warnings"
+          - name: test
+            cargoCommand: test
+            cargoArgs: "--workspace"
+          - name: build
+            cargoCommand: build
+            cargoArgs: "--workspace"
+          - name: fmt
+            cargoCommand: fmt
+            cargoArgs: "-- --check"
+          - name: doc
+            cargoCommand: doc
+            cargoArgs: "--workspace --document-private-items"
+      fail-fast: false
+    name: ${{ matrix.mode.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        timeout-minutes: 5
+
+      - uses: ./.github/actions/common-setup
+        timeout-minutes: 10
+
+      - name: Run cargo ${{ matrix.mode.cargoCommand }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: ${{ matrix.mode.cargoCommand }}
+          args: ${{ matrix.mode.cargoArgs }}
+
+  downloadable-utils:
+    strategy:
+      matrix:
+        util:
+          - name: cargo deny
+            download: >
+              curl -sSL "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.13.7/cargo-deny-0.13.7-x86_64-unknown-linux-musl.tar.gz" |
+                sudo tar -xzvf - -C /usr/local/bin --strip-components=1
+            run: cargo-deny check --hide-inclusion-graph --show-stats
+            requiresRust: true
+
+          - name: taplo
+            download: >
+              curl -sSL "https://github.com/tamasfe/taplo/releases/download/0.8.0/taplo-linux-x86_64.gz" |
+                zcat > /usr/local/bin/taplo \
+              && chmod +x /usr/local/bin/taplo
+            run: taplo format --check
+
+          - name: cargo-sort
+            download: >
+              curl -sSL "https://github.com/DevinR528/cargo-sort/releases/download/v1.0.9/cargo-sort-x86_64-unknown-linux-gnu.tar.gz" |
+                sudo tar -xzvf - -C /usr/local/bin
+            run: cargo-sort -cwg
+
+      fail-fast: false
+    name: ${{ matrix.util.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        timeout-minutes: 5
+
+      - uses: ./.github/actions/common-setup
+        with:
+          requiresRust: ${{ matrix.util.requiresRust || false }}
+        timeout-minutes: 10
+
+      - name: Download ${{ matrix.util.name }}
+        run: ${{ matrix.util.download }}
+        timeout-minutes: 10
+
+      - run: ${{ matrix.util.run }}
+        timeout-minutes: 10

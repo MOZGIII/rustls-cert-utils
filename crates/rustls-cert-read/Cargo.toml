@@ -1,0 +1,16 @@
+[package]
+name = "rustls-cert-read"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/MOZGIII/rustls-cert-utils"
+description = """
+A certificate chain and private key reading abstraction for rustls.
+"""
+keywords = ["rustls", "utils", "certs"]
+categories = ["utils"]
+readme = "../../README.md"
+
+[dependencies]
+async-trait = "0.1"
+rustls = "0.21"

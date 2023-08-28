@@ -1,0 +1,18 @@
+name: "Common setup"
+description: "Apply the common setup steps for this codebase"
+inputs:
+  requiresRust:
+    description: "Requires rust to be installed"
+    required: false
+    default: "true"
+runs:
+  using: "composite"
+  steps:
+    - name: Cache
+      uses: Swatinem/rust-cache@v2
+      if: ${{ inputs.requiresRust == 'true' }}
+
+    - name: Install rust toolchain
+      shell: bash
+      run: rustup show
+      if: ${{ inputs.requiresRust == 'true' }}
