@@ -8,7 +8,7 @@ description = """
 A reloadable certificate resolver for rustls.
 """
 keywords = ["rustls", "utils", "certs"]
-categories = ["utils"]
+categories = ["network-programming"]
 readme = "../../README.md"
 
 [dependencies]

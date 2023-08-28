@@ -8,7 +8,7 @@ description = """
 A rustls certificate chain and private key file reader.
 """
 keywords = ["rustls", "utils", "certs"]
-categories = ["utils"]
+categories = ["filesystem"]
 readme = "../../README.md"
 
 [dependencies]

@@ -8,7 +8,7 @@ description = """
 A certificate chain and private key reading abstraction for rustls.
 """
 keywords = ["rustls", "utils", "certs"]
-categories = ["utils"]
+categories = ["cryptography"]
 readme = "../../README.md"
 
 [dependencies]

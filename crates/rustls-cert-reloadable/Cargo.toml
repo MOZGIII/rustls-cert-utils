@@ -8,7 +8,7 @@ description = """
 A generic reloadable state manager.
 """
 keywords = ["utils", "state", "arc", "arc-swap"]
-categories = ["utils"]
+categories = ["caching"]
 readme = "../../README.md"
 
 [dependencies]
