@@ -38,8 +38,7 @@ pub enum CertifiedKeyLoaderError<ReadKey, ReadCerts> {
     LoadKey(rustls::Error),
 }
 
-#[async_trait::async_trait]
-impl<KeyProvider, KeyReader, CertsReader> rustls_cert_reloadable::Loader
+impl<KeyProvider, KeyReader, CertsReader> reloadable_state::core::Loader
     for CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader>
 where
     KeyProvider: rustls::crypto::KeyProvider,

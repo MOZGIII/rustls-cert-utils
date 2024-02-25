@@ -5,19 +5,9 @@ use std::sync::Arc;
 use arc_swap::ArcSwap;
 use tokio::sync::Mutex;
 
-/// Something that can perform a single load operation.
-#[async_trait::async_trait]
-pub trait Loader {
-    /// The value to load.
-    type Value;
-    /// The error we can encounter while loading.
-    type Error;
+pub use reloadable_core as core;
 
-    /// Load the value.
-    async fn load(&mut self) -> Result<Self::Value, Self::Error>;
-}
-
-/// A generic reloadable value.
+/// A generic reloadable shared state.
 pub struct Reloadable<T, R> {
     /// The value.
     value: ArcSwap<T>,
@@ -46,7 +36,7 @@ impl<T, L> Reloadable<T, L> {
 
 impl<T, L> Reloadable<T, L>
 where
-    L: Loader<Value = T>,
+    L: reloadable_core::Loader<Value = T>,
 {
     /// Load the initial value and create a new [`Reloadable`].
     pub async fn init_load(mut loader: L) -> Result<(Self, Arc<T>), L::Error> {

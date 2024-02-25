@@ -4,16 +4,16 @@
 #[derive(Debug)]
 pub struct ReloadableResolver<Loader> {
     /// The inner reloadable value.
-    reloadable: rustls_cert_reloadable::Reloadable<rustls::sign::CertifiedKey, Loader>,
+    reloadable: reloadable_state::Reloadable<rustls::sign::CertifiedKey, Loader>,
 }
 
 impl<Loader> ReloadableResolver<Loader>
 where
-    Loader: rustls_cert_reloadable::Loader<Value = rustls::sign::CertifiedKey>,
+    Loader: reloadable_state::core::Loader<Value = rustls::sign::CertifiedKey>,
 {
     /// Perform the initial load and construct the [`ReloadableResolver`].
     pub async fn init(loader: Loader) -> Result<Self, Loader::Error> {
-        let (reloadable, _) = rustls_cert_reloadable::Reloadable::init_load(loader).await?;
+        let (reloadable, _) = reloadable_state::Reloadable::init_load(loader).await?;
         Ok(Self { reloadable })
     }
 
@@ -26,8 +26,9 @@ where
 
 impl<Loader> rustls::server::ResolvesServerCert for ReloadableResolver<Loader>
 where
-    Loader: rustls_cert_reloadable::Loader<Value = rustls::sign::CertifiedKey>,
-    Loader: Send + std::fmt::Debug,
+    Loader: reloadable_state::core::Loader<Value = rustls::sign::CertifiedKey>,
+    Loader: Send,
+    Loader: std::fmt::Debug,
 {
     fn resolve(
         &self,
@@ -38,7 +39,7 @@ where
 }
 
 impl<Loader> std::ops::Deref for ReloadableResolver<Loader> {
-    type Target = rustls_cert_reloadable::Reloadable<rustls::sign::CertifiedKey, Loader>;
+    type Target = reloadable_state::Reloadable<rustls::sign::CertifiedKey, Loader>;
 
     fn deref(&self) -> &Self::Target {
         &self.reloadable
