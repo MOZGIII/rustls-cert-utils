@@ -50,7 +50,7 @@ where
                 .certs_reader
                 .read_certs()
                 .map_err(CertifiedKeyLoaderError::ReadCerts);
-            futures_util::try_join!(certs_fut, key_fut)?
+            futures_util::future::try_join(certs_fut, key_fut).await?
         };
 
         let key = self
