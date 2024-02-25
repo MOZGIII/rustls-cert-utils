@@ -7,7 +7,7 @@ pub trait ReadKey {
     type Error;
 
     /// Perform the reading.
-    async fn read_key(&self) -> Result<rustls::PrivateKey, Self::Error>;
+    async fn read_key(&self) -> Result<rustls_pki_types::PrivateKeyDer<'static>, Self::Error>;
 }
 
 /// Read a list of certificates.
@@ -19,5 +19,7 @@ pub trait ReadCerts {
     type Error;
 
     /// Perform the reading.
-    async fn read_certs(&self) -> Result<Vec<rustls::Certificate>, Self::Error>;
+    async fn read_certs(
+        &self,
+    ) -> Result<Vec<rustls_pki_types::CertificateDer<'static>>, Self::Error>;
 }

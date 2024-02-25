@@ -7,7 +7,8 @@ use std::str::FromStr;
 pub enum Format {
     /// PEM format.
     PEM,
-    /// DER format.
+    /// DER format
+    /// PKCS8 specifically, other formats are not supported via this DER.
     DER,
 }
 

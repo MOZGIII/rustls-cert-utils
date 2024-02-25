@@ -34,13 +34,15 @@ impl<T> FileReader<T> {
 }
 
 #[async_trait::async_trait]
-impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls::Certificate>> {
+impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::CertificateDer<'static>>> {
     type Error = io::Error;
 
-    async fn read_certs(&self) -> Result<Vec<rustls::Certificate>, Self::Error> {
+    async fn read_certs(
+        &self,
+    ) -> Result<Vec<rustls_pki_types::CertificateDer<'static>>, Self::Error> {
         let data = self.read_file().await?;
         match self.format {
-            Format::DER => Ok(vec![rustls::Certificate(data)]),
+            Format::DER => Ok(vec![data.into()]),
             Format::PEM => {
                 let mut cursor = std::io::Cursor::new(data);
                 crate::pem::parse_certs(&mut cursor)
@@ -50,13 +52,13 @@ impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls::Certificate>> {
 }
 
 #[async_trait::async_trait]
-impl rustls_cert_read::ReadKey for FileReader<rustls::PrivateKey> {
+impl rustls_cert_read::ReadKey for FileReader<rustls_pki_types::PrivateKeyDer<'static>> {
     type Error = io::Error;
 
-    async fn read_key(&self) -> Result<rustls::PrivateKey, Self::Error> {
+    async fn read_key(&self) -> Result<rustls_pki_types::PrivateKeyDer<'static>, Self::Error> {
         let data = self.read_file().await?;
         match self.format {
-            Format::DER => Ok(rustls::PrivateKey(data)),
+            Format::DER => Ok(rustls_pki_types::PrivateKeyDer::Pkcs8(data.into())),
             Format::PEM => {
                 let mut cursor = std::io::Cursor::new(data);
                 crate::pem::parse_key(&mut cursor)

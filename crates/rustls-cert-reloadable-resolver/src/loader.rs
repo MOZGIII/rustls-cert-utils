@@ -2,11 +2,13 @@
 
 /// Load the [`rustls::sign::CertifiedKey`] from the specified paths using the specified readers.
 #[derive(Debug)]
-pub struct CertifiedKeyLoader<RK, RC> {
-    /// Key reader - reads a key from the file.
-    pub key_reader: RK,
-    /// Certs reader - reads a list of certs from file.
-    pub certs_reader: RC,
+pub struct CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader> {
+    /// The provider to load the key into.
+    pub key_provider: KeyProvider,
+    /// Reads a key from the file.
+    pub key_reader: KeyReader,
+    /// Reads a list of certs from file.
+    pub certs_reader: CertsReader,
 }
 
 /// An error that can occur while loading the data.
@@ -17,14 +19,16 @@ pub enum CertifiedKeyLoaderError<R: std::error::Error + 'static> {
     Read(R),
     /// Key processing failed.
     #[error("key: {0}")]
-    Key(rustls::sign::SignError),
+    Key(rustls::Error),
 }
 
 #[async_trait::async_trait]
-impl<RK, RC, E> rustls_cert_reloadable::Loader for CertifiedKeyLoader<RK, RC>
+impl<KeyProvider, KeyReader, CertsReader, E> rustls_cert_reloadable::Loader
+    for CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader>
 where
-    RK: rustls_cert_read::ReadKey<Error = E> + Send,
-    RC: rustls_cert_read::ReadCerts<Error = E> + Send,
+    KeyProvider: rustls::crypto::KeyProvider,
+    KeyReader: rustls_cert_read::ReadKey<Error = E> + Send,
+    CertsReader: rustls_cert_read::ReadCerts<Error = E> + Send,
     E: std::error::Error + Send + 'static,
 {
     type Value = rustls::sign::CertifiedKey;
@@ -37,7 +41,10 @@ where
             tokio::try_join!(certs_fut, key_fut).map_err(CertifiedKeyLoaderError::Read)?
         };
 
-        let key = rustls::sign::any_supported_type(&key).map_err(CertifiedKeyLoaderError::Key)?;
+        let key = self
+            .key_provider
+            .load_private_key(key)
+            .map_err(CertifiedKeyLoaderError::Key)?;
 
         Ok(rustls::sign::CertifiedKey::new(certs, key))
     }
