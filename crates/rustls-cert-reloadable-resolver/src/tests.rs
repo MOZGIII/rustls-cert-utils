@@ -21,6 +21,9 @@ impl rustls_cert_read::ReadCerts for DummyCertsReader {
         todo!()
     }
 }
+
+fn fake_spawn(_f: impl core::future::Future<Output = ()> + 'static + Send) {}
+
 #[test]
 fn traits_satisfied() {
     let crypto_provider = rustls::crypto::ring::default_provider();
@@ -31,5 +34,29 @@ fn traits_satisfied() {
         certs_reader: DummyCertsReader,
     };
 
-    let _resolver = ReloadableResolver::init(loader);
+    fake_spawn(async move {
+        let resolver = ReloadableResolver::init(loader).await.unwrap();
+        resolver.reload().await.unwrap()
+    });
+}
+
+#[test]
+fn with_file_reader() {
+    let crypto_provider = rustls::crypto::ring::default_provider();
+
+    let key_reader =
+        rustls_cert_file_reader::FileReader::new("key", rustls_cert_file_reader::Format::DER);
+    let certs_reader =
+        rustls_cert_file_reader::FileReader::new("certs", rustls_cert_file_reader::Format::DER);
+
+    let loader = CertifiedKeyLoader {
+        key_provider: key_provider::Dyn(crypto_provider.key_provider),
+        key_reader,
+        certs_reader,
+    };
+
+    fake_spawn(async move {
+        let resolver = ReloadableResolver::init(loader).await.unwrap();
+        resolver.reload().await.unwrap()
+    });
 }
