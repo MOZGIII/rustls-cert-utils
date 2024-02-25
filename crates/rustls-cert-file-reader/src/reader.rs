@@ -33,7 +33,6 @@ impl<T> FileReader<T> {
     }
 }
 
-#[async_trait::async_trait]
 impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::CertificateDer<'static>>> {
     type Error = io::Error;
 
@@ -51,7 +50,6 @@ impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::Certificat
     }
 }
 
-#[async_trait::async_trait]
 impl rustls_cert_read::ReadKey for FileReader<rustls_pki_types::PrivateKeyDer<'static>> {
     type Error = io::Error;
 
