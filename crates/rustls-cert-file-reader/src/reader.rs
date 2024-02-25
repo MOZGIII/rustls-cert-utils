@@ -33,7 +33,7 @@ impl<T> FileReader<T> {
     }
 }
 
-impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::CertificateDer<'static>>> {
+impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::CertificateDer<'_>>> {
     type Error = io::Error;
 
     async fn read_certs(
@@ -50,7 +50,7 @@ impl rustls_cert_read::ReadCerts for FileReader<Vec<rustls_pki_types::Certificat
     }
 }
 
-impl rustls_cert_read::ReadKey for FileReader<rustls_pki_types::PrivateKeyDer<'static>> {
+impl rustls_cert_read::ReadKey for FileReader<rustls_pki_types::PrivateKeyDer<'_>> {
     type Error = io::Error;
 
     async fn read_key(&self) -> Result<rustls_pki_types::PrivateKeyDer<'static>, Self::Error> {
