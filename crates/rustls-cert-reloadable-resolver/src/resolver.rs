@@ -36,3 +36,17 @@ where
         Some(self.reloadable.get())
     }
 }
+
+impl<Loader> std::ops::Deref for ReloadableResolver<Loader> {
+    type Target = rustls_cert_reloadable::Reloadable<rustls::sign::CertifiedKey, Loader>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.reloadable
+    }
+}
+
+impl<Loader> std::ops::DerefMut for ReloadableResolver<Loader> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.reloadable
+    }
+}
