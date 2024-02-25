@@ -16,6 +16,7 @@ rustls-cert-read = { version = "0.2", path = "../rustls-cert-read" }
 rustls-cert-reloadable = { version = "0.1", path = "../rustls-cert-reloadable" }
 
 async-trait = "0.1"
+futures-util = { version = "0.3", default-features = false }
 rustls = "0.22"
 thiserror = "1"
 tokio = { version = "1", features = ["macros"] }
