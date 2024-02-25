@@ -1,6 +1,6 @@
 [package]
 name = "rustls-cert-reloadable-resolver"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/MOZGIII/rustls-cert-utils"
@@ -12,8 +12,8 @@ categories = ["network-programming"]
 readme = "../../README.md"
 
 [dependencies]
+reloadable-state = { version = "0.1", path = "../reloadable-state" }
 rustls-cert-read = { version = "0.3", path = "../rustls-cert-read" }
-rustls-cert-reloadable = { version = "0.1", path = "../rustls-cert-reloadable" }
 
 async-trait = "0.1"
 futures-util = { version = "0.3", default-features = false }
