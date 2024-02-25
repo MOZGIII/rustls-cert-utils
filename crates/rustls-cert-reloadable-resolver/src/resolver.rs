@@ -27,7 +27,7 @@ where
 impl<Loader> rustls::server::ResolvesServerCert for ReloadableResolver<Loader>
 where
     Loader: rustls_cert_reloadable::Loader<Value = rustls::sign::CertifiedKey>,
-    Loader: Send,
+    Loader: Send + std::fmt::Debug,
 {
     fn resolve(
         &self,

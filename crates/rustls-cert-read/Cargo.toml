@@ -13,4 +13,4 @@ readme = "../../README.md"
 
 [dependencies]
 async-trait = "0.1"
-rustls = "0.21"
+rustls-pki-types = "1.3"
