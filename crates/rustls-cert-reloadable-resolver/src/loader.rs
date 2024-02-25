@@ -3,7 +3,6 @@
 use futures_util::TryFutureExt as _;
 
 /// Load the [`rustls::sign::CertifiedKey`] from the specified paths using the specified readers.
-#[derive(Debug)]
 pub struct CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader> {
     /// The provider to load the key into.
     pub key_provider: KeyProvider,
@@ -11,6 +10,18 @@ pub struct CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader> {
     pub key_reader: KeyReader,
     /// Reads a list of certs from file.
     pub certs_reader: CertsReader,
+}
+
+impl<KeyProvider, KeyReader, CertsReader> std::fmt::Debug
+    for CertifiedKeyLoader<KeyProvider, KeyReader, CertsReader>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CertifiedKeyLoader")
+            .field("key_provider", &"...")
+            .field("key_reader", &"...")
+            .field("certs_reader", &"...")
+            .finish()
+    }
 }
 
 /// An error that can occur while loading the data.
