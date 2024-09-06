@@ -26,7 +26,7 @@ fn fake_spawn(_f: impl core::future::Future<Output = ()> + 'static + Send) {}
 
 #[test]
 fn traits_satisfied() {
-    let crypto_provider = rustls::crypto::ring::default_provider();
+    let crypto_provider = rustls::crypto::aws_lc_rs::default_provider();
 
     let loader = CertifiedKeyLoader {
         key_provider: key_provider::Dyn(crypto_provider.key_provider),
@@ -42,7 +42,7 @@ fn traits_satisfied() {
 
 #[test]
 fn with_file_reader() {
-    let crypto_provider = rustls::crypto::ring::default_provider();
+    let crypto_provider = rustls::crypto::aws_lc_rs::default_provider();
 
     let key_reader =
         rustls_cert_file_reader::FileReader::new("key", rustls_cert_file_reader::Format::DER);
