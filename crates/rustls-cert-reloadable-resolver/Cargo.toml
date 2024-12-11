@@ -17,8 +17,10 @@ rustls-cert-read = { version = "0.3", path = "../rustls-cert-read" }
 
 async-trait = "0.1"
 futures-util = { version = "0.3", default-features = false }
-rustls = "0.23"
+rustls = { version = "0.23", default-features = false }
 thiserror = "2"
 
 [dev-dependencies]
 rustls-cert-file-reader = { version = "0.4", path = "../rustls-cert-file-reader" }
+
+rustls = "0.23"
