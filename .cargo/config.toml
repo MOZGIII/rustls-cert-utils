@@ -31,5 +31,5 @@ rustflags = [
   "-Wclippy::inefficient_to_string",
   "-Wclippy::match_same_arms",
   "-Wclippy::unsafe_derive_deserialize",
-  "-Wclippy::match_on_vec_items",
+  "-Wclippy::indexing_slicing",
 ]
