@@ -16,7 +16,17 @@ pub fn parse_certs(rd: &mut dyn io::BufRead) -> Result<Vec<CertificateDer<'stati
 
 /// Parse the signle private key from PEM (PKCS8).
 pub fn parse_key(rd: &mut dyn io::BufRead) -> Result<PrivateKeyDer<'static>, io::Error> {
-    PrivateKeyDer::from_pem_reader(rd).map_err(into_io_err)
+    let key = PrivateKeyDer::from_pem_reader(&mut *rd).map_err(into_io_err)?;
+    // Assert there are no more keys present in the data.
+    while let Some((kind, data)) = pem::from_buf(&mut *rd).map_err(into_io_err)? {
+        if let Some(_) = PrivateKeyDer::from_pem(kind, data) {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "more than one key".to_string(),
+            ));
+        }
+    }
+    Ok(key)
 }
 
 fn into_io_err(err: pem::Error) -> io::Error {
